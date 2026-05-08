@@ -158,6 +158,7 @@
     <ClInclude Include="View\OrderManagerView.h" />
     <ClInclude Include="View\MonitoringView.h" />
     <ClInclude Include="View\ProductionView.h" />
+    <ClInclude Include="View\ReleaseView.h" />
     <ClInclude Include="View\DummyDataView.h" />
     <ClInclude Include="View\MainView.h" />
   </ItemGroup>

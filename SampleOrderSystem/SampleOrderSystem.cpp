@@ -15,6 +15,7 @@
 #include "View/OrderManagerView.h"
 #include "View/MonitoringView.h"
 #include "View/ProductionView.h"
+#include "View/ReleaseView.h"
 #include "View/DummyDataView.h"
 
 static void InitConsole() {
@@ -143,6 +144,7 @@ int main() {
     OrderManagerView   orderMgrView(orderSvc, sampleSvc);
     MonitoringView     monitorView(monitorSvc);
     ProductionView     prodView(prodSvc, db);
+    ReleaseView        releaseView(orderSvc, sampleSvc);
     DummyDataView      dummyView(dummySvc);
 
     int choice = -1;
@@ -156,7 +158,7 @@ int main() {
         case 3: orderMgrView.run(); UI::goToMain = false; break;
         case 4: monitorView.run();  UI::goToMain = false; break;
         case 5: prodView.run();     UI::goToMain = false; break;
-        case 6: std::cout << "\n"; UI::printInfo("출고 처리 — 준비 중");       UI::waitEnter(); break;
+        case 6: releaseView.run(); UI::goToMain = false; break;
         case 7: dummyView.run();    UI::goToMain = false; break;
         case 0: std::cout << "\n"; UI::printSuccess("종료합니다.\n");           break;
         default: UI::printError("잘못된 선택입니다."); break;

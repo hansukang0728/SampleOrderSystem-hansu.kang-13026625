@@ -31,7 +31,25 @@ public:
 
     Order* findById(const std::string& id) { return db_.findOrder(id); }
 
-    // RESERVED 주문만 필터링 (enqueued_at 오름차순 유지 — 저장 순서 = FIFO)
+    // CONFIRMED 주문 목록 (O-04 출고 대상)
+    std::vector<const Order*> confirmedOrders() const {
+        std::vector<const Order*> result;
+        for (const auto& o : db_.orders())
+            if (o.status == OrderStatus::CONFIRMED)
+                result.push_back(&o);
+        return result;
+    }
+
+    // O-04: 출고 처리 CONFIRMED → RELEASE (재고 변화 없음)
+    bool releaseOrder(const std::string& orderId) {
+        Order* o = db_.findOrder(orderId);
+        if (!o || o->status != OrderStatus::CONFIRMED) return false;
+        o->status = OrderStatus::RELEASE;
+        db_.updateOrder(*o);
+        return true;
+    }
+
+    // RESERVED 주문만 필터링
     std::vector<const Order*> reservedOrders() const {
         std::vector<const Order*> result;
         for (const auto& o : db_.orders())
