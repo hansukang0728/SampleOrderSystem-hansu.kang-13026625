@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Model">
+      <UniqueIdentifier>{A1B2C3D4-E5F6-7890-ABCD-EF1234567801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{B2C3D4E5-F6A7-8901-BCDE-F12345678902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="View">
+      <UniqueIdentifier>{C3D4E5F6-A7B8-9012-CDEF-012345678903}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MVC.cpp" />
+    <ClCompile Include="Controller\SampleController.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\OrderController.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller\ProductionController.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="View\MainView.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Model\Sample.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\Order.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\ProductionQueue.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\SampleController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\OrderController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\ProductionController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="View\MainView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
