@@ -62,6 +62,18 @@ CONFIRMED → (출고) → RELEASE
 | total_time | double | 총 생산시간 (분) — `평균생산시간 × 실생산량` |
 | completed | bool | 생산 완료 여부 |
 | enqueued_at | string | 큐 등록 시각 (`YYYY-MM-DD HH:MM:SS`) |
+| **started_at** | string | **실제 생산 시작 시각** — 비어있으면 WAITING 상태 |
+
+#### 생산 상태 (3단계)
+
+| 상태 | 조건 | 설명 |
+|---|---|---|
+| WAITING | `started_at == ""` && `completed == false` | 큐 대기 중 |
+| IN_PROGRESS | `started_at != ""` && `completed == false` | 생산 중 (경과 시간 추적) |
+| DONE | `completed == true` | 생산 완료, 재고·주문 상태 자동 갱신됨 |
+
+조회·모니터링 시마다 IN_PROGRESS 항목의 경과 시간(`elapsedMinutes`)을 확인하여  
+`경과 시간 >= total_time` 이면 자동 완료 처리: `stock += actual_qty`, 주문 → CONFIRMED
 
 ---
 

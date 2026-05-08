@@ -97,7 +97,7 @@ SampleOrderSystem/
 
 ---
 
-### Phase 2 — 모델 레이어 (`models.h`)
+### Phase 2 — 모델 레이어 (`models.h`)  ✅ 완료
 **목표**: 3개 도메인 모델 + JSON 직렬화 완성
 
 #### Sample

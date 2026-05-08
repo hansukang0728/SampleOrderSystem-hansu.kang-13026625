@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <iostream>
+#include "models.h"
 
 static void InitConsole() {
     if (!SetConsoleOutputCP(CP_UTF8) || !SetConsoleCP(CP_UTF8))
@@ -13,8 +14,19 @@ static void InitConsole() {
         SetConsoleMode(hOut, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 }
 
+#ifdef SOS_TEST_MODE
+// ── 테스트 모드: gtest runner ─────────────────────────────────
+#include <gtest/gtest.h>
+int main(int argc, char** argv) {
+    InitConsole();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+#else
+// ── 앱 모드: 메인 진입점 (Phase 6에서 메뉴 루프로 확장) ──────
 int main() {
     InitConsole();
     std::cout << "SampleOrderSystem 초기화 완료\n";
     return 0;
 }
+#endif
