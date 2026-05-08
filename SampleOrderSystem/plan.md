@@ -220,6 +220,15 @@ private:
 #### Phase 4-5 — 모니터링 ✅ 완료
 #### Phase 4-6 — 생산 라인 ✅ 완료
 #### Phase 4-7 — 출고 처리 ✅ 완료
+
+### Phase 5 — UI 레이어  ✅ 완료 (Phase 4와 병행 진행)
+> ConsoleUI.h + 각 View(SampleView, OrderView, OrderManagerView, MonitoringView, ProductionView, ReleaseView, DummyDataView)는 Phase 4 서브 단계에서 MVC/View/에 구현됨
+
+### Phase 6 — 메인 조립 + 더미 데이터  ✅ 완료 (Phase 4와 병행 진행)
+> SampleOrderSystem.cpp main() 루프, 전광판, 서비스 객체 조립은 Phase 4-1~4-7 진행 중 동시 구현됨  
+> DummyDataService / DummyDataView는 Phase 4-3 이후 구현됨
+
+### Phase 7 — 전체 흐름 검증  ✅ 완료
 > 설계 문서: [docs/phase/phase4_1_mainmenu_design.md](docs/phase/phase4_1_mainmenu_design.md)
 
 #### SampleService (`service/SampleService.h`)

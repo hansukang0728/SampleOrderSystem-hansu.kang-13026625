@@ -144,6 +144,7 @@
     <ClCompile Include="tests\monitoring_test.cpp" />
     <ClCompile Include="tests\production_service_test.cpp" />
     <ClCompile Include="tests\release_test.cpp" />
+    <ClCompile Include="tests\phase7_full_flow_test.cpp" />
     <ClCompile Include="tests\scenario_test.cpp" />
     <ClCompile Include="tests\extended_scenario_test.cpp" />
   </ItemGroup>
