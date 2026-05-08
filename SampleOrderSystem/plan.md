@@ -150,7 +150,7 @@ struct ProductionQueueItem {
 
 ---
 
-### Phase 3 — DB 레이어 (`app_db.h`)
+### Phase 3 — DB 레이어 (`app_db.h`)  ✅ 완료
 **목표**: data.json 단일 파일로 3개 컬렉션 관리
 
 ```cpp
@@ -178,7 +178,7 @@ public:
                                 int shortage, int actualQty, double totalTime);
     std::vector<ProductionQueueItem>& queue();
     bool                             updateQueueItem(const ProductionQueueItem&);
-    ProductionQueueItem*             frontPending();  // 미완료 중 가장 오래된 항목
+    ProductionQueueItem*             frontWaiting();  // WAITING 상태 중 가장 오래된 항목
 
 private:
     void load();

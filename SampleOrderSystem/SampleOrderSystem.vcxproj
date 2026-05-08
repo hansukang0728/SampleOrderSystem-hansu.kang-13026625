@@ -133,10 +133,12 @@
   <ItemGroup>
     <ClCompile Include="SampleOrderSystem.cpp" />
     <ClCompile Include="tests\models_test.cpp" />
+    <ClCompile Include="tests\app_db_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="json_lite.h" />
     <ClInclude Include="models.h" />
+    <ClInclude Include="app_db.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
