@@ -6,7 +6,9 @@
 #include "Model/app_db.h"
 #include "View/ConsoleUI.h"
 #include "Service/SampleService.h"
+#include "Service/OrderService.h"
 #include "View/SampleView.h"
+#include "View/OrderView.h"
 
 static void InitConsole() {
     if (!SetConsoleOutputCP(CP_UTF8) || !SetConsoleCP(CP_UTF8))
@@ -125,7 +127,9 @@ int main() {
     InitConsole();
     AppDB          db("data.json");
     SampleService  sampleSvc(db);
+    OrderService   orderSvc(db);
     SampleView     sampleView(sampleSvc);
+    OrderView      orderView(orderSvc, sampleSvc);
 
     int choice = -1;
     while (choice != 0) {
@@ -134,7 +138,7 @@ int main() {
 
         switch (choice) {
         case 1: sampleView.run(); break;
-        case 2: std::cout << "\n"; UI::printInfo("시료 주문 — 준비 중");        UI::waitEnter(); break;
+        case 2: orderView.run(); break;
         case 3: std::cout << "\n"; UI::printInfo("주문 승인/거절 — 준비 중");  UI::waitEnter(); break;
         case 4: std::cout << "\n"; UI::printInfo("모니터링 — 준비 중");        UI::waitEnter(); break;
         case 5: std::cout << "\n"; UI::printInfo("생산 라인 조회 — 준비 중");  UI::waitEnter(); break;

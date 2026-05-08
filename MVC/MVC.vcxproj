@@ -148,8 +148,10 @@
     <ClInclude Include="Controller\OrderController.h" />
     <ClInclude Include="Controller\ProductionController.h" />
     <ClInclude Include="Service\SampleService.h" />
+    <ClInclude Include="Service\OrderService.h" />
     <ClInclude Include="View\ConsoleUI.h" />
     <ClInclude Include="View\SampleView.h" />
+    <ClInclude Include="View\OrderView.h" />
     <ClInclude Include="View\MainView.h" />
   </ItemGroup>
   <ItemGroup>
