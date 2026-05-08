@@ -24,8 +24,8 @@ public:
         if (seed == 0) seed = static_cast<unsigned>(std::time(nullptr));
 
         std::mt19937 rng(seed);
-        std::uniform_real_distribution<double> timeDist(10.0, 120.0);
-        std::uniform_real_distribution<double> yieldDist(0.70, 0.99);
+        std::uniform_real_distribution<double> timeDist(0.1, 0.9);   // 1분 미만
+        std::uniform_real_distribution<double> yieldDist(0.60, 0.95); // 수율 60~95%
         std::uniform_int_distribution<int>     stockDist(0, 200);
 
         int base = static_cast<int>(db_.samples().size()); // 기존 수 기준 이름 결정
@@ -84,10 +84,12 @@ private:
     static constexpr int POOL_SIZE = 20;
 
     static inline const std::string CUSTOMER_POOL[] = {
-        "홍길동", "김철수", "이영희", "박민준", "최지원",
-        "정수현", "강민서", "윤서연", "임태양", "한지은"
+        "삼성전자",    "SK하이닉스",  "LG화학",      "현대자동차",  "포스코",
+        "한화솔루션",  "롯데케미칼",  "Samsung SDI", "Hyundai Mobis",
+        "Doosan Enerbility", "KCC Corporation", "OCI Company",
+        "Hana Materials", "SK Siltron",  "Merck KGaA"
     };
-    static constexpr int CUSTOMER_POOL_SIZE = 10;
+    static constexpr int CUSTOMER_POOL_SIZE = 15;
 
     // 인덱스 → 이름 (풀 순환, 21번째부터 번호 접미사)
     static std::string makeName(int idx) {
