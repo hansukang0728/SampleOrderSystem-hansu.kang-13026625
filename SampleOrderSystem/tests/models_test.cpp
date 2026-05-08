@@ -1,6 +1,6 @@
 #ifdef SOS_TEST_MODE
 #include <gtest/gtest.h>
-#include "../models.h"
+#include "Model/models.h"
 
 // ════════════════════════════════════════════════════
 //  SampleTest  (TC-S-01 ~ TC-S-04)

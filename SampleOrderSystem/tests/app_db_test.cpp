@@ -1,7 +1,7 @@
 #ifdef SOS_TEST_MODE
 #include <gtest/gtest.h>
 #include <cstdio>
-#include "../app_db.h"
+#include "Model/app_db.h"
 
 // ════════════════════════════════════════════════════
 //  Fixture — 각 테스트마다 임시 파일 격리

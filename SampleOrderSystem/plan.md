@@ -210,7 +210,10 @@ private:
 
 ---
 
-### Phase 4 — 서비스 레이어
+### Phase 4 — 서비스·UI 레이어
+
+#### Phase 4-1 — 메인 메뉴 ✅ 완료
+> 설계 문서: [docs/phase/phase4_1_mainmenu_design.md](docs/phase/phase4_1_mainmenu_design.md)
 
 #### SampleService (`service/SampleService.h`)
 | 메서드 | PRD | 설명 |
