@@ -114,6 +114,14 @@ public:
         return nullptr;
     }
 
+    // D-03: 전체 초기화 — 모든 컬렉션 비우고 저장
+    void resetAll() {
+        samples_.clear();
+        orders_.clear();
+        queue_.clear();
+        save();
+    }
+
     // IN_PROGRESS 항목 순회 → 경과 시간 충족 시 자동 완료 처리
     // WAITING 항목은 건너뜀 (Phase 4 processNext()가 started_at 기록 담당)
     void checkAndComplete() {

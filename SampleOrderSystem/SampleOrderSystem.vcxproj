@@ -140,6 +140,7 @@
     <ClCompile Include="tests\app_db_test.cpp" />
     <ClCompile Include="tests\sample_service_test.cpp" />
     <ClCompile Include="tests\order_service_test.cpp" />
+    <ClCompile Include="tests\scenario_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MVC\Model\json_lite.h" />
@@ -147,9 +148,11 @@
     <ClInclude Include="..\MVC\Model\app_db.h" />
     <ClInclude Include="..\MVC\Service\SampleService.h" />
     <ClInclude Include="..\MVC\Service\OrderService.h" />
+    <ClInclude Include="..\MVC\Service\DummyDataService.h" />
     <ClInclude Include="..\MVC\View\ConsoleUI.h" />
     <ClInclude Include="..\MVC\View\SampleView.h" />
     <ClInclude Include="..\MVC\View\OrderView.h" />
+    <ClInclude Include="..\MVC\View\DummyDataView.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

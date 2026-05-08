@@ -7,8 +7,10 @@
 #include "View/ConsoleUI.h"
 #include "Service/SampleService.h"
 #include "Service/OrderService.h"
+#include "Service/DummyDataService.h"
 #include "View/SampleView.h"
 #include "View/OrderView.h"
+#include "View/DummyDataView.h"
 
 static void InitConsole() {
     if (!SetConsoleOutputCP(CP_UTF8) || !SetConsoleCP(CP_UTF8))
@@ -125,11 +127,13 @@ static void printMainMenu(AppDB& db) {
 // ── main ──────────────────────────────────────────────────────
 int main() {
     InitConsole();
-    AppDB          db("data.json");
-    SampleService  sampleSvc(db);
-    OrderService   orderSvc(db);
-    SampleView     sampleView(sampleSvc);
-    OrderView      orderView(orderSvc, sampleSvc);
+    AppDB            db("data.json");
+    SampleService    sampleSvc(db);
+    OrderService     orderSvc(db);
+    DummyDataService dummySvc(db);
+    SampleView       sampleView(sampleSvc);
+    OrderView        orderView(orderSvc, sampleSvc);
+    DummyDataView    dummyView(dummySvc);
 
     int choice = -1;
     while (choice != 0) {
@@ -143,7 +147,7 @@ int main() {
         case 4: std::cout << "\n"; UI::printInfo("모니터링 — 준비 중");        UI::waitEnter(); break;
         case 5: std::cout << "\n"; UI::printInfo("생산 라인 조회 — 준비 중");  UI::waitEnter(); break;
         case 6: std::cout << "\n"; UI::printInfo("출고 처리 — 준비 중");       UI::waitEnter(); break;
-        case 7: std::cout << "\n"; UI::printInfo("더미 데이터 — 준비 중");     UI::waitEnter(); break;
+        case 7: dummyView.run(); break;
         case 0: std::cout << "\n"; UI::printSuccess("종료합니다.\n");           break;
         default: UI::printError("잘못된 선택입니다."); break;
         }
