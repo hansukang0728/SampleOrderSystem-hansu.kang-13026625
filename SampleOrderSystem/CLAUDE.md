@@ -118,7 +118,130 @@ CONFIRMED → (출고) → RELEASE
 
 ---
 
-## 5. Agents
+## 5. Agent 운용 규칙 (Mandatory)
+
+> 아래 규칙은 선택이 아닌 **필수**다. 해당 조건이 충족되면 반드시 Agent를 호출한다.
+
+### 규칙 1 — 문서 작성·수정 완료 시 → design-doc-reviewer 호출
+
+**트리거 조건**
+- CLAUDE.md, PRD.md, plan.md 작성 또는 수정 완료 시
+- `docs/phase/phaseN_design.md` 작성 완료 시
+- `docs/feature/*.md` 작성 또는 수정 완료 시
+
+**수행 절차**
+1. 문서 작성·수정 완료 직후 `design-doc-reviewer` agent 호출
+2. agent가 반환한 리뷰 결과(Critical / Major / Minor / Suggestion)를 확인
+3. **Critical · Major 항목은 반드시 문서에 반영** 후 재검토
+4. Minor · Suggestion은 판단하여 선택 반영
+
+**목적**: 구현 전 설계 오류·누락·모순을 문서 단계에서 조기 발견
+
+---
+
+### 규칙 2 — 코드 작성·수정 완료 시 → clean-code-reviewer 호출 + 리뷰 문서화 + 정합성 확인
+
+**트리거 조건**
+- 새로운 헤더(`.h`) 또는 소스(`.cpp`) 파일 작성 완료 시
+- 기존 파일에 함수·클래스 추가 또는 수정 완료 시
+
+**수행 절차**
+
+**Step 1 — clean-code-reviewer agent 호출**
+- 작성·수정된 코드를 대상으로 `clean-code-reviewer` agent 호출
+- agent는 Clean Code 원칙·SOLID·C++ 관용구 기준으로 리뷰 수행
+
+**Step 2 — 리뷰 결과 문서화**
+- 리뷰 결과를 아래 경로에 문서로 저장:
+  ```
+  docs/review/code_review_<대상파일명>_<YYYYMMDD>.md
+  ```
+  예) `docs/review/code_review_models_h_20260508.md`
+
+- 문서 포맷:
+  ```markdown
+  # Code Review — <대상 파일>
+  **리뷰 일시**: YYYY-MM-DD
+  **리뷰 대상**: <파일 경로>
+  **리뷰어**: clean-code-reviewer agent
+
+  ## 종합 평가
+  <2~3문장 전체 평가>
+
+  ## Critical 🔴
+  <필수 수정 항목>
+
+  ## Major 🟡
+  <수정 권장 항목>
+
+  ## Minor 🟢
+  <선택 개선 항목>
+
+  ## 리팩토링 제안
+  <Before / After 코드 예시 (상위 1~3개)>
+
+  ## 긍정 사항 ✅
+  <잘 작성된 부분>
+
+  ## 조치 결과
+  - [ ] <Critical 항목 조치 여부>
+  ```
+
+**Step 3 — 리뷰 결과 보고 및 반영**
+- Critical 항목: **즉시 코드 수정 후** 조치 결과를 문서에 `[x]` 로 표시
+- Major 항목: 현재 Phase 완료 전까지 반영
+- Minor · 리팩토링 제안: 다음 Phase 또는 판단에 따라 반영
+
+**Step 4 — 문서 정합성 체크리스트 확인** (코드 ↔ 설계 문서 일치 여부)
+
+| 확인 항목 | 참조 문서 |
+|---|---|
+| 클래스·메서드 이름이 설계와 일치하는가 | `plan.md`, `docs/phase/phaseN_design.md` |
+| 도메인 모델 필드명·타입이 일치하는가 | `CLAUDE.md` 섹션 2 |
+| ID 형식(`S-NNN`, `ORD-YYYYMMDD-XXXX`)이 코드에 반영됐는가 | `CLAUDE.md` 섹션 2 |
+| OrderStatus 상태 전이 로직이 명세와 일치하는가 | `CLAUDE.md` 섹션 3, `docs/feature/OrderManager.md` |
+| 생산 계산 공식이 정확히 구현됐는가 | `CLAUDE.md` 섹션 3, `docs/feature/ProductionLine.md` |
+| 재고 상태 임계값(0/1~10/11+)이 코드에 반영됐는가 | `CLAUDE.md` 섹션 3 |
+| PRD 기능 ID(S-01, O-02 등)에 대응하는 기능이 구현됐는가 | `PRD.md` |
+
+- 정합성 불일치 발견 시 → **코드 또는 문서 중 하나를 수정하여 일치**시킨다
+- 코드가 의도적으로 설계를 변경한 경우 → 문서를 먼저 업데이트한 뒤 코드 반영
+
+---
+
+### 규칙 3 — Phase 완료 시 종합 점검
+
+빌드 성공만으로 Phase 완료를 선언하지 않는다. 아래 3단계를 모두 통과해야 완료다.
+
+**Step 1 — 빌드 검증**
+- Debug x64 기준 경고 0, 오류 0
+
+**Step 2 — 실행 검증** (Phase별 기준은 `plan.md` 검증 레벨 컬럼 참조)
+
+| Phase | 실행 검증 내용 |
+|---|---|
+| 1 | 초기화 메시지 정상 출력, 한글 깨짐 없음 |
+| 2 | toJson → saveFile → loadFile → fromJson 왕복 후 값 일치 |
+| 3 | 실행 후 data.json 생성 확인, 재실행 후 데이터 유지 확인 |
+| 4 | 재고 충분·부족 승인 분기, 생산 계산 공식(`ceil(부족분/(수율×0.9))`) 수치 검증 |
+| 5 | 전체 메뉴 진입·입력·출력 흐름, PRD 기능 ID별 동작 확인 |
+| 6 | PRD DoD 체크리스트 전 항목 수동 확인 |
+| 7 | 프로그램 재실행 후 모든 데이터 유지, 엣지 케이스(재고 0, 중복 승인 등) |
+
+**Step 3 — 문서 점검**
+- `design-doc-reviewer` 로 해당 Phase 설계 문서 최종 검토
+- `clean-code-reviewer` 로 해당 Phase 전체 코드 검토 → 리뷰 문서 생성
+- `docs/review/` 내 미조치 Critical·Major 항목 전수 확인
+- 모든 항목 완료 후 `plan.md` 해당 Phase 체크리스트를 `[x]` 로 표시
+
+**리뷰 문서 관리**
+- `docs/review/` 디렉터리에 파일별 리뷰 문서 누적 관리
+- 파일명 규칙: `code_review_<파일명>_<YYYYMMDD>.md`
+- 동일 파일 재리뷰 시 새 날짜로 신규 문서 생성 (이력 보존)
+
+---
+
+## 6. Agent 목록 및 역할
 
 이 프로젝트에는 코드 품질과 설계 문서 품질을 자동으로 검토하는 두 개의 Agent가 등록되어 있습니다.
 Agent 정의 파일 위치: `DummyDataGenerator/.claude/agents/`
@@ -186,7 +309,7 @@ Agent 정의 파일 위치: `DummyDataGenerator/.claude/agents/`
 ## 6. 비기능 및 구현 요구사항
 
 ### 5.1 기술 스택
-- **언어**: C++17 이상
+- **언어**: C++20 (`stdcpp20`) — vcxproj 기준
 - **영속성**: JSON 파일 (`data.json`) — `json_lite.h` 사용, 외부 라이브러리 없음
 - **인코딩**: `/utf-8` 컴파일러 플래그, `SetConsoleOutputCP(CP_UTF8)`
 - **전처리**: `NOMINMAX` 정의
@@ -206,5 +329,11 @@ Agent 정의 파일 위치: `DummyDataGenerator/.claude/agents/`
 ### 5.4 Clean Code / Agentic Engineering
 - **CLAUDE.md**: 도메인 모델, 비즈니스 로직, 기술 요구사항 기준 문서 (현재 파일)
 - **PRD.md**: 제품 요구사항 문서 — 기능 범위, 우선순위, 완료 기준 관리
+- **plan.md**: 7단계 구현 계획 — Phase별 작업 항목 및 설계 문서 링크
+- **docs/phase/phaseN_design.md**: 각 Phase 상세 설계 문서
+  - Phase 1: 프로젝트 기반 설정 → [phase1_design.md](docs/phase/phase1_design.md)
+  - Phase 2~7: 구현 진행에 따라 순차 작성
+- **docs/feature/**: 기능별 UI·흐름·검증 규칙 문서
+- **docs/solution-projects.md**: POC 프로젝트별 기여 관계 정리
 - 코드 변경 시 위 문서와 일관성 유지
 - 함수·클래스 단일 책임 원칙 준수, 불필요한 추상화 금지

@@ -84,12 +84,16 @@ SampleOrderSystem/
 ---
 
 ### Phase 1 — 프로젝트 기반 설정
-**목표**: 빌드 환경 완성, 빈 main 실행 확인
+> 상세 설계: **[docs/phase/phase1_design.md](docs/phase/phase1_design.md)**
 
-- [ ] `SampleOrderSystem.vcxproj` — `/utf-8`, `NOMINMAX`, C++20 설정
-- [ ] `DataPersistence.slnx` — SampleOrderSystem 프로젝트 등록 확인
-- [ ] `json_lite.h` — DataPersistence에서 복사
-- [ ] 빈 `main()` 빌드 통과 확인
+**목표**: 빌드 환경 완성, 콘솔 초기화 main 실행 확인
+
+- [x] `SampleOrderSystem.vcxproj` — `/utf-8`, `NOMINMAX`, C++20 설정
+- [x] `CRAProject.slnx` — SampleOrderSystem 프로젝트 등록 확인
+- [x] `json_lite.h` — DataPersistence에서 복사, vcxproj 등록
+- [x] `SampleOrderSystem.cpp` — `InitConsole()` 분리, UTF-8·ANSI 초기화
+- [x] Debug x64 빌드 경고 0, 오류 0 통과
+- [x] 실행 확인 — `"SampleOrderSystem 초기화 완료"` 출력 정상
 
 ---
 
@@ -311,15 +315,15 @@ int main() {
 
 ## 4. 구현 순서 요약
 
-```
-Phase 1  프로젝트 설정          vcxproj, 빌드 확인
-Phase 2  모델 레이어            models.h (Sample, Order, ProductionQueueItem)
-Phase 3  DB 레이어              app_db.h (AppDB, data.json 통합)
-Phase 4  서비스 레이어          SampleService, OrderService, ProductionService
-Phase 5  UI 레이어              ConsoleUI + 6개 View
-Phase 6  메인 조립 + 더미데이터  SampleOrderSystem.cpp
-Phase 7  검증                   전체 흐름 시나리오 테스트
-```
+| Phase | 내용 | 설계 문서 | 검증 레벨 |
+|---|---|---|---|
+| Phase 1 | 프로젝트 설정 (vcxproj, json_lite.h, 콘솔 초기화) | [phase1_design.md](docs/phase/phase1_design.md) | 빌드 + 실행 출력 확인 |
+| Phase 2 | 모델 레이어 (Sample, Order, ProductionQueueItem) | phase2_design.md | 빌드 + toJson/fromJson 왕복 확인 |
+| Phase 3 | DB 레이어 (AppDB, data.json 통합) | phase3_design.md | 빌드 + data.json 생성·재실행 유지 확인 |
+| Phase 4 | 서비스 레이어 (SampleService, OrderService, ProductionService) | phase4_design.md | 빌드 + 재고 분기·생산 계산 공식 시나리오 |
+| Phase 5 | UI 레이어 (ConsoleUI + 6개 View) | phase5_design.md | 빌드 + 메뉴 출력·입력 흐름 + 기능별 시나리오 |
+| Phase 6 | 메인 조립 + 더미 데이터 | phase6_design.md | 빌드 + PRD DoD 전체 시나리오 |
+| Phase 7 | 검증 (전체 흐름 시나리오 테스트) | phase7_design.md | 빌드 + 재실행 데이터 유지 + 엣지 케이스 |
 
 ---
 

@@ -1,20 +1,20 @@
-﻿// SampleOrderSystem.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
-
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+static void InitConsole() {
+    if (!SetConsoleOutputCP(CP_UTF8) || !SetConsoleCP(CP_UTF8))
+        OutputDebugStringW(L"[WARN] UTF-8 콘솔 설정 실패\n");
+
+    // ANSI 이스케이프 코드 활성화 (색상·박스 드로잉용, best-effort)
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD  mode = 0;
+    if (hOut != INVALID_HANDLE_VALUE && GetConsoleMode(hOut, &mode))
+        SetConsoleMode(hOut, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 }
 
-// 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
-// 프로그램 디버그: <F5> 키 또는 [디버그] > [디버깅 시작] 메뉴
-
-// 시작을 위한 팁: 
-//   1. [솔루션 탐색기] 창을 사용하여 파일을 추가/관리합니다.
-//   2. [팀 탐색기] 창을 사용하여 소스 제어에 연결합니다.
-//   3. [출력] 창을 사용하여 빌드 출력 및 기타 메시지를 확인합니다.
-//   4. [오류 목록] 창을 사용하여 오류를 봅니다.
-//   5. [프로젝트] > [새 항목 추가]로 이동하여 새 코드 파일을 만들거나, [프로젝트] > [기존 항목 추가]로 이동하여 기존 코드 파일을 프로젝트에 추가합니다.
-//   6. 나중에 이 프로젝트를 다시 열려면 [파일] > [열기] > [프로젝트]로 이동하고 .sln 파일을 선택합니다.
+int main() {
+    InitConsole();
+    std::cout << "SampleOrderSystem 초기화 완료\n";
+    return 0;
+}
