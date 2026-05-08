@@ -7,4 +7,5 @@
   <Project Path="DataMonitor/DataMonitor.vcxproj" Id="c1e02aea-b290-407d-aa20-90987175f001" />
   <Project Path="DummyDataGenerator/DummyDataGenerator.vcxproj" Id="b1bb4140-2746-47ce-a3a5-39891c8f9d6c" />
   <Project Path="MVC/MVC.vcxproj" Id="0c5b7792-a35a-47d9-85be-26a64488e03e" />
+  <Project Path="SampleOrderSystem/SampleOrderSystem.vcxproj" Id="35604193-33a8-4fbc-90d9-91fb9e679eba" />
 </Solution>
