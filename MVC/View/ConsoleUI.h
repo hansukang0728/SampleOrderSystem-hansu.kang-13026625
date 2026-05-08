@@ -7,6 +7,10 @@
 
 namespace UI {
 
+// ── 메인 메뉴 즉시 이동 플래그 ───────────────────────────────
+// 네비게이션에서 "m" 입력 시 true로 설정 → main 루프에서 감지 후 리셋
+inline bool goToMain = false;
+
 // ── ANSI 색상 (constexpr → 내부 링키지, ODR 안전) ───────────
 constexpr const char* RST  = "\033[0m";
 constexpr const char* BOLD = "\033[1m";

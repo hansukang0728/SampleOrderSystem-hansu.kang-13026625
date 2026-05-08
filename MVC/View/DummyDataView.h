@@ -29,8 +29,11 @@ public:
             std::cout << "  " << UI::DIM << " 0. " << UI::RST
                       << UI::GRY << " 뒤로\n" << UI::RST;
             UI::printHLine();
+            std::cout << UI::GRY << "  [m] 메인 메뉴로 이동\n" << UI::RST;
 
-            choice = UI::readInt("  선택: ");
+            std::string inp = UI::readLine("  선택: ");
+            if (inp == "m" || inp == "M") { UI::goToMain = true; return; }
+            try { choice = std::stoi(inp); } catch (...) { choice = -1; }
             switch (choice) {
             case 1: handleGenerateSamples(); break;
             case 2: handleGenerateOrders();  break;
@@ -38,6 +41,7 @@ public:
             case 0:                          break;
             default: UI::printError("잘못된 선택입니다."); break;
             }
+            if (UI::goToMain) return;
         }
     }
 

@@ -24,8 +24,11 @@ public:
             UI::printHLine();
             std::cout << "  " << UI::DIM << " 0. " << UI::RST << UI::GRY << " 뒤로\n" << UI::RST;
             UI::printHLine();
+            std::cout << UI::GRY << "  [m] 메인 메뉴로 이동\n" << UI::RST;
 
-            choice = UI::readInt("  선택: ");
+            std::string inp = UI::readLine("  선택: ");
+            if (inp == "m" || inp == "M") { UI::goToMain = true; return; }
+            try { choice = std::stoi(inp); } catch (...) { choice = -1; }
             switch (choice) {
             case 1: handleAdd();      break;
             case 2: handleListAll();  break;
@@ -34,6 +37,7 @@ public:
             case 0:                   break;
             default: UI::printError("잘못된 선택입니다."); break;
             }
+            if (UI::goToMain) return;
         }
     }
 
@@ -156,13 +160,15 @@ private:
 
             if (page > 0)             std::cout << UI::YLW << "  [p] 이전 페이지   " << UI::RST;
             if (page < totalPg - 1)   std::cout << UI::YLW << "  [n] 다음 페이지   " << UI::RST;
-            std::cout << UI::DIM << "  [0] 뒤로\n" << UI::RST;
+            std::cout << UI::DIM << "  [0] 뒤로   " << UI::RST
+                      << UI::GRY << "[m] 메인\n" << UI::RST;
             UI::printHLine();
 
             std::string input = UI::readLine("  선택: ");
             if      (input == "n" && page < totalPg - 1) ++page;
             else if (input == "p" && page > 0)           --page;
             else if (input == "0")                       break;
+            else if (input == "m" || input == "M")       { UI::goToMain = true; return; }
         }
     }
 

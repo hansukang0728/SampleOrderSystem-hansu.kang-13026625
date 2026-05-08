@@ -40,6 +40,7 @@ public:
             std::string input = UI::readLine("  선택: ");
 
             if (input == "0") return;
+            if (input == "m" || input == "M") { UI::goToMain = true; return; }
             if (input == "n" && page < totalPages - 1) { ++page; continue; }
             if (input == "p" && page > 0)              { --page; continue; }
 
@@ -114,7 +115,8 @@ private:
             std::cout << UI::YLW << "[n] 다음   " << UI::RST;
         if (page > 0)
             std::cout << UI::YLW << "[p] 이전   " << UI::RST;
-        std::cout << UI::DIM << "[0] 뒤로\n" << UI::RST;
+        std::cout << UI::DIM << "[0] 뒤로   " << UI::RST
+                  << UI::GRY << "[m] 메인\n" << UI::RST;
         UI::printHLine();
     }
 

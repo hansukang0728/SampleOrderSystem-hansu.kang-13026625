@@ -143,13 +143,13 @@ int main() {
         choice = UI::readInt("  선택: ");
 
         switch (choice) {
-        case 1: sampleView.run(); break;
-        case 2: orderView.run(); break;
-        case 3: orderMgrView.run(); break;
+        case 1: sampleView.run();   UI::goToMain = false; break;
+        case 2: orderView.run();    UI::goToMain = false; break;
+        case 3: orderMgrView.run(); UI::goToMain = false; break;
         case 4: std::cout << "\n"; UI::printInfo("모니터링 — 준비 중");        UI::waitEnter(); break;
         case 5: std::cout << "\n"; UI::printInfo("생산 라인 조회 — 준비 중");  UI::waitEnter(); break;
         case 6: std::cout << "\n"; UI::printInfo("출고 처리 — 준비 중");       UI::waitEnter(); break;
-        case 7: dummyView.run(); break;
+        case 7: dummyView.run();    UI::goToMain = false; break;
         case 0: std::cout << "\n"; UI::printSuccess("종료합니다.\n");           break;
         default: UI::printError("잘못된 선택입니다."); break;
         }
