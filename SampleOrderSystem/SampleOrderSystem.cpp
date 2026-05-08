@@ -7,10 +7,12 @@
 #include "View/ConsoleUI.h"
 #include "Service/SampleService.h"
 #include "Service/OrderService.h"
+#include "Service/MonitoringService.h"
 #include "Service/DummyDataService.h"
 #include "View/SampleView.h"
 #include "View/OrderView.h"
 #include "View/OrderManagerView.h"
+#include "View/MonitoringView.h"
 #include "View/DummyDataView.h"
 
 static void InitConsole() {
@@ -132,9 +134,11 @@ int main() {
     SampleService    sampleSvc(db);
     OrderService     orderSvc(db);
     DummyDataService dummySvc(db);
+    MonitoringService  monitorSvc(db);
     SampleView         sampleView(sampleSvc);
     OrderView          orderView(orderSvc, sampleSvc);
     OrderManagerView   orderMgrView(orderSvc, sampleSvc);
+    MonitoringView     monitorView(monitorSvc);
     DummyDataView      dummyView(dummySvc);
 
     int choice = -1;
@@ -146,7 +150,7 @@ int main() {
         case 1: sampleView.run();   UI::goToMain = false; break;
         case 2: orderView.run();    UI::goToMain = false; break;
         case 3: orderMgrView.run(); UI::goToMain = false; break;
-        case 4: std::cout << "\n"; UI::printInfo("모니터링 — 준비 중");        UI::waitEnter(); break;
+        case 4: monitorView.run();  UI::goToMain = false; break;
         case 5: std::cout << "\n"; UI::printInfo("생산 라인 조회 — 준비 중");  UI::waitEnter(); break;
         case 6: std::cout << "\n"; UI::printInfo("출고 처리 — 준비 중");       UI::waitEnter(); break;
         case 7: dummyView.run();    UI::goToMain = false; break;

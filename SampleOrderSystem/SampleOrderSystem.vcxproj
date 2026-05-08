@@ -141,6 +141,7 @@
     <ClCompile Include="tests\sample_service_test.cpp" />
     <ClCompile Include="tests\order_service_test.cpp" />
     <ClCompile Include="tests\order_manager_test.cpp" />
+    <ClCompile Include="tests\monitoring_test.cpp" />
     <ClCompile Include="tests\scenario_test.cpp" />
     <ClCompile Include="tests\extended_scenario_test.cpp" />
   </ItemGroup>
@@ -150,11 +151,13 @@
     <ClInclude Include="..\MVC\Model\app_db.h" />
     <ClInclude Include="..\MVC\Service\SampleService.h" />
     <ClInclude Include="..\MVC\Service\OrderService.h" />
+    <ClInclude Include="..\MVC\Service\MonitoringService.h" />
     <ClInclude Include="..\MVC\Service\DummyDataService.h" />
     <ClInclude Include="..\MVC\View\ConsoleUI.h" />
     <ClInclude Include="..\MVC\View\SampleView.h" />
     <ClInclude Include="..\MVC\View\OrderView.h" />
     <ClInclude Include="..\MVC\View\OrderManagerView.h" />
+    <ClInclude Include="..\MVC\View\MonitoringView.h" />
     <ClInclude Include="..\MVC\View\DummyDataView.h" />
   </ItemGroup>
   <ItemGroup>
