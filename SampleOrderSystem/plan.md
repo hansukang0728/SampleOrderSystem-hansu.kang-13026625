@@ -213,6 +213,7 @@ private:
 ### Phase 4 — 서비스·UI 레이어
 
 #### Phase 4-1 — 메인 메뉴 ✅ 완료
+#### Phase 4-2 — 시료 관리 ✅ 완료
 > 설계 문서: [docs/phase/phase4_1_mainmenu_design.md](docs/phase/phase4_1_mainmenu_design.md)
 
 #### SampleService (`service/SampleService.h`)

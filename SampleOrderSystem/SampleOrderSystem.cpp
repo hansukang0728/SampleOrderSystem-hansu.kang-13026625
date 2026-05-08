@@ -5,6 +5,8 @@
 #include <limits>
 #include "Model/app_db.h"
 #include "View/ConsoleUI.h"
+#include "Service/SampleService.h"
+#include "View/SampleView.h"
 
 static void InitConsole() {
     if (!SetConsoleOutputCP(CP_UTF8) || !SetConsoleCP(CP_UTF8))
@@ -121,7 +123,9 @@ static void printMainMenu(AppDB& db) {
 // ── main ──────────────────────────────────────────────────────
 int main() {
     InitConsole();
-    AppDB db("data.json");
+    AppDB          db("data.json");
+    SampleService  sampleSvc(db);
+    SampleView     sampleView(sampleSvc);
 
     int choice = -1;
     while (choice != 0) {
@@ -129,7 +133,7 @@ int main() {
         choice = UI::readInt("  선택: ");
 
         switch (choice) {
-        case 1: std::cout << "\n"; UI::printInfo("시료 관리 — 준비 중");        UI::waitEnter(); break;
+        case 1: sampleView.run(); break;
         case 2: std::cout << "\n"; UI::printInfo("시료 주문 — 준비 중");        UI::waitEnter(); break;
         case 3: std::cout << "\n"; UI::printInfo("주문 승인/거절 — 준비 중");  UI::waitEnter(); break;
         case 4: std::cout << "\n"; UI::printInfo("모니터링 — 준비 중");        UI::waitEnter(); break;
