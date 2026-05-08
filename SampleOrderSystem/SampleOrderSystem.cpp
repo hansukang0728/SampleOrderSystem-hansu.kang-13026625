@@ -10,6 +10,7 @@
 #include "Service/DummyDataService.h"
 #include "View/SampleView.h"
 #include "View/OrderView.h"
+#include "View/OrderManagerView.h"
 #include "View/DummyDataView.h"
 
 static void InitConsole() {
@@ -131,9 +132,10 @@ int main() {
     SampleService    sampleSvc(db);
     OrderService     orderSvc(db);
     DummyDataService dummySvc(db);
-    SampleView       sampleView(sampleSvc);
-    OrderView        orderView(orderSvc, sampleSvc);
-    DummyDataView    dummyView(dummySvc);
+    SampleView         sampleView(sampleSvc);
+    OrderView          orderView(orderSvc, sampleSvc);
+    OrderManagerView   orderMgrView(orderSvc, sampleSvc);
+    DummyDataView      dummyView(dummySvc);
 
     int choice = -1;
     while (choice != 0) {
@@ -143,7 +145,7 @@ int main() {
         switch (choice) {
         case 1: sampleView.run(); break;
         case 2: orderView.run(); break;
-        case 3: std::cout << "\n"; UI::printInfo("주문 승인/거절 — 준비 중");  UI::waitEnter(); break;
+        case 3: orderMgrView.run(); break;
         case 4: std::cout << "\n"; UI::printInfo("모니터링 — 준비 중");        UI::waitEnter(); break;
         case 5: std::cout << "\n"; UI::printInfo("생산 라인 조회 — 준비 중");  UI::waitEnter(); break;
         case 6: std::cout << "\n"; UI::printInfo("출고 처리 — 준비 중");       UI::waitEnter(); break;

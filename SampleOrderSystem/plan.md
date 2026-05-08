@@ -216,6 +216,7 @@ private:
 #### Phase 4-2 — 시료 관리 ✅ 완료
 #### Phase 4-3 — 시료 주문 ✅ 완료
 #### 더미 데이터 + 시나리오 테스트 ✅ 완료
+#### Phase 4-4 — 주문 승인/거절 ✅ 완료
 > 설계 문서: [docs/phase/phase4_1_mainmenu_design.md](docs/phase/phase4_1_mainmenu_design.md)
 
 #### SampleService (`service/SampleService.h`)

@@ -153,6 +153,7 @@
     <ClInclude Include="View\ConsoleUI.h" />
     <ClInclude Include="View\SampleView.h" />
     <ClInclude Include="View\OrderView.h" />
+    <ClInclude Include="View\OrderManagerView.h" />
     <ClInclude Include="View\DummyDataView.h" />
     <ClInclude Include="View\MainView.h" />
   </ItemGroup>

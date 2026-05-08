@@ -219,9 +219,91 @@ TEST_F(ScenarioTest, S7_OrderSequence_Continuity) {
     EXPECT_EQ("ORD-" + today + "-0006", o.id);  // 순번 이어서 6번
 }
 
-// NOTE: Phase 4-4 완료 후 추가 예정
-// Scenario 8: 승인 (재고 충분) → CONFIRMED → 출고 → RELEASE
-// Scenario 9: 승인 (재고 부족) → PRODUCING → 생산 완료 → CONFIRMED → 출고
-// Scenario 10: 주문 거절 → 재고 불변
+// ════════════════════════════════════════════════════
+//  시나리오 8: 승인 (재고 충분) → CONFIRMED
+// ════════════════════════════════════════════════════
+
+TEST_F(ScenarioTest, S8_Approve_StockSufficient_To_Confirmed) {
+    SampleService sampleSvc(*db_);
+    OrderService  orderSvc(*db_);
+
+    sampleSvc.add("알파-시료", 0.5, 0.95, 100);
+    auto o = orderSvc.createOrder("S-001", 30, "삼성전자");
+
+    // 승인 → 재고 충분 → CONFIRMED
+    auto r = orderSvc.approveOrder(o.id);
+    EXPECT_TRUE(r.success);
+    EXPECT_TRUE(r.sufficient);
+    EXPECT_EQ(OrderStatus::CONFIRMED, orderSvc.findById(o.id)->status);
+    EXPECT_EQ(70, sampleSvc.findById("S-001")->stock);  // 100 - 30
+
+    // 영속성 확인
+    reloadDb();
+    SampleService svc2(*db_);
+    OrderService  oSvc2(*db_);
+    EXPECT_EQ(OrderStatus::CONFIRMED, oSvc2.findById(o.id)->status);
+    EXPECT_EQ(70, svc2.findById("S-001")->stock);
+}
+
+// ════════════════════════════════════════════════════
+//  시나리오 9: 승인 (재고 부족) → PRODUCING → 생산 완료 → CONFIRMED
+// ════════════════════════════════════════════════════
+
+TEST_F(ScenarioTest, S9_Approve_StockInsufficient_To_Producing_Then_Confirmed) {
+    SampleService sampleSvc(*db_);
+    OrderService  orderSvc(*db_);
+
+    sampleSvc.add("베타-시료", 1.5, 0.88, 5);
+    auto o = orderSvc.createOrder("S-001", 50, "SK하이닉스");
+
+    // 승인 → 재고 부족 → PRODUCING + 생산 큐 등록
+    auto r = orderSvc.approveOrder(o.id);
+    EXPECT_TRUE(r.success);
+    EXPECT_FALSE(r.sufficient);
+    EXPECT_EQ(OrderStatus::PRODUCING, orderSvc.findById(o.id)->status);
+    EXPECT_EQ(0, sampleSvc.findById("S-001")->stock);
+
+    // 생산 시간 시뮬레이션: started_at을 과거 시각으로 설정
+    auto& q = db_->queue();
+    ASSERT_FALSE(q.empty());
+    q[0].started_at = "2000-01-01 00:00:00";  // 충분히 과거
+    db_->updateQueueItem(q[0]);
+
+    // checkAndComplete() 호출 → 자동 완료 처리
+    db_->checkAndComplete();
+
+    // 생산 완료 → CONFIRMED, 재고 증가
+    EXPECT_TRUE(db_->queue()[0].completed);
+    EXPECT_EQ(OrderStatus::CONFIRMED, orderSvc.findById(o.id)->status);
+    EXPECT_EQ(r.actualQty, sampleSvc.findById("S-001")->stock);  // actual_qty 입고
+}
+
+// ════════════════════════════════════════════════════
+//  시나리오 10: 주문 거절 → 재고 불변
+// ════════════════════════════════════════════════════
+
+TEST_F(ScenarioTest, S10_Reject_StockUnchanged) {
+    SampleService sampleSvc(*db_);
+    OrderService  orderSvc(*db_);
+
+    sampleSvc.add("알파-시료", 0.5, 0.95, 100);
+    auto o1 = orderSvc.createOrder("S-001", 30, "삼성전자");
+    auto o2 = orderSvc.createOrder("S-001", 20, "SK하이닉스");
+
+    // o1 거절
+    EXPECT_TRUE(orderSvc.rejectOrder(o1.id));
+    EXPECT_EQ(OrderStatus::REJECTED, orderSvc.findById(o1.id)->status);
+    EXPECT_EQ(100, sampleSvc.findById("S-001")->stock);  // 재고 불변
+
+    // o2 승인 (재고 충분)
+    orderSvc.approveOrder(o2.id);
+    EXPECT_EQ(80, sampleSvc.findById("S-001")->stock);   // 100 - 20
+
+    // 영속성: REJECTED 상태 유지
+    reloadDb();
+    OrderService oSvc2(*db_);
+    EXPECT_EQ(OrderStatus::REJECTED,  oSvc2.findById(o1.id)->status);
+    EXPECT_EQ(OrderStatus::CONFIRMED, oSvc2.findById(o2.id)->status);
+}
 
 #endif  // SOS_TEST_MODE
