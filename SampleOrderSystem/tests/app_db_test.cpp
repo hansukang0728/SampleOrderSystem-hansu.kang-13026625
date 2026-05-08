@@ -143,8 +143,8 @@ TEST_F(AppDBTest, Order_Persistence) {
 //  ProductionQueueItem 테스트  (TC-DB-11 ~ TC-DB-15)
 // ════════════════════════════════════════════════════
 
-// TC-DB-11: enqueue — WAITING 상태로 생성
-TEST_F(AppDBTest, Enqueue_WaitingState) {
+// TC-DB-11: enqueue — 첫 번째 항목은 자동으로 IN_PROGRESS (FIFO 자동 시작)
+TEST_F(AppDBTest, Enqueue_FirstItem_AutoInProgress) {
     AppDB db(path_);
     auto p = db.enqueue("ORD-001", "S-001", 45, 57, 2565.0);
     EXPECT_EQ(1,       p.id);
@@ -153,19 +153,21 @@ TEST_F(AppDBTest, Enqueue_WaitingState) {
     EXPECT_EQ(57,      p.actual_qty);
     EXPECT_DOUBLE_EQ(2565.0, p.total_time);
     EXPECT_FALSE(p.completed);
-    EXPECT_EQ("",  p.started_at);
-    EXPECT_TRUE(p.isWaiting());
+    // 큐에 아무것도 없었으므로 즉시 IN_PROGRESS 시작
+    EXPECT_FALSE(p.started_at.empty());
+    EXPECT_TRUE(p.isInProgress());
 }
 
-// TC-DB-12: frontWaiting — FIFO 순서
-TEST_F(AppDBTest, FrontWaiting_Fifo) {
+// TC-DB-12: frontWaiting — 첫 번째는 IN_PROGRESS, 두 번째가 WAITING (FIFO)
+TEST_F(AppDBTest, FrontWaiting_SecondItem) {
     AppDB db(path_);
-    db.enqueue("ORD-001", "S-001", 10, 12, 120.0);
-    db.enqueue("ORD-002", "S-002", 20, 23, 230.0);
+    db.enqueue("ORD-001", "S-001", 10, 12, 120.0);  // → IN_PROGRESS 자동 시작
+    db.enqueue("ORD-002", "S-002", 20, 23, 230.0);  // → WAITING
 
     auto* front = db.frontWaiting();
     ASSERT_NE(nullptr, front);
-    EXPECT_EQ(1, front->id);  // 가장 먼저 enqueue된 항목
+    EXPECT_EQ(2, front->id);  // 두 번째 항목이 첫 번째 WAITING
+    EXPECT_TRUE(front->isWaiting());
 }
 
 // TC-DB-13: frontWaiting — 비어있을 때 nullptr
@@ -189,8 +191,7 @@ TEST_F(AppDBTest, CheckAndComplete_AutoCompletion) {
     // enqueue
     db.enqueue(o.id, "S-001", 45, 57, 1.0);
 
-    // queue() 호출 → checkAndComplete 실행 (WAITING이므로 변화 없음)
-    // started_at을 과거로 설정하여 IN_PROGRESS 상태로 전환
+    // enqueue 시 자동으로 IN_PROGRESS 시작 — started_at을 과거로 덮어써서 완료 조건 충족
     auto& items = db.queue();
     ASSERT_FALSE(items.empty());
     items[0].started_at = "2000-01-01 00:00:00";  // 충분히 오래된 과거
@@ -205,19 +206,19 @@ TEST_F(AppDBTest, CheckAndComplete_AutoCompletion) {
     EXPECT_EQ(5 + 57, db.findSample("S-001")->stock);  // 5 + 57 = 62
 }
 
-// TC-DB-15: Queue 영속성
+// TC-DB-15: Queue 영속성 — 자동 시작된 IN_PROGRESS 상태로 유지
 TEST_F(AppDBTest, Queue_Persistence) {
     {
         AppDB db(path_);
-        db.enqueue("ORD-001", "S-001", 10, 12, 120.0);
+        db.enqueue("ORD-001", "S-001", 10, 12, 120.0);  // 즉시 IN_PROGRESS
     }
     AppDB db2(path_);
-    auto& q = db2.queue();  // checkAndComplete 실행 (WAITING이므로 변화 없음)
+    auto& q = db2.queue();
     ASSERT_EQ(1u, q.size());
     EXPECT_EQ(1,       q[0].id);
     EXPECT_EQ("S-001", q[0].sample_id);
     EXPECT_EQ(10,      q[0].shortage);
-    EXPECT_TRUE(q[0].isWaiting());
+    EXPECT_TRUE(q[0].isInProgress());  // 자동 시작 상태 영속
 }
 
 #endif  // SOS_TEST_MODE

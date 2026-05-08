@@ -207,8 +207,9 @@ TEST_F(ExtScenarioTest, PQ02_AfterProduction_NextOrderSufficient) {
     }
 }
 
-// PQ-03: 완료된 큐 항목은 frontWaiting에서 제외
-TEST_F(ExtScenarioTest, PQ03_CompletedItem_NotInFrontWaiting) {
+// PQ-03: 첫 번째 완료 → 두 번째 자동 IN_PROGRESS (FIFO 자동 시작)
+// 자동 시작 로직으로 두 번째 항목은 WAITING이 아닌 IN_PROGRESS가 됨
+TEST_F(ExtScenarioTest, PQ03_CompletedItem_SecondAutoStarts) {
     SampleService svc(*db_);
     OrderService  oSvc(*db_);
     svc.add("뮤", 0.5, 0.90, 0);
@@ -219,14 +220,17 @@ TEST_F(ExtScenarioTest, PQ03_CompletedItem_NotInFrontWaiting) {
     oSvc.approveOrder(o2.id);
 
     ASSERT_EQ(2u, db_->queue().size());
+    // 첫 번째: IN_PROGRESS (자동 시작), 두 번째: WAITING
+    EXPECT_TRUE(db_->queue()[0].isInProgress());
+    EXPECT_TRUE(db_->queue()[1].isWaiting());
 
-    // 첫 번째 완료
+    // 첫 번째 완료 → checkAndComplete가 두 번째 자동 시작
     simulateProductionComplete(0);
 
-    // frontWaiting은 두 번째 항목 (o2)
-    auto* front = db_->frontWaiting();
-    ASSERT_NE(nullptr, front);
-    EXPECT_EQ(o2.id, front->order_id);
+    // 두 번째 항목이 IN_PROGRESS로 자동 전환
+    EXPECT_TRUE(db_->queue()[1].isInProgress());
+    // frontWaiting: 이제 WAITING이 없음
+    EXPECT_EQ(nullptr, db_->frontWaiting());
 }
 
 // ════════════════════════════════════════════════════

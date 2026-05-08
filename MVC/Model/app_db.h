@@ -85,7 +85,14 @@ public:
         p.total_time  = totalTime;
         p.completed   = false;
         p.enqueued_at = nowStr();
-        p.started_at  = "";          // WAITING 상태로 시작
+        p.started_at  = "";
+
+        // FIFO 자동 시작: IN_PROGRESS도 WAITING도 없으면 이 항목이 즉시 시작
+        bool hasActive = false;
+        for (const auto& q : queue_)
+            if (q.isInProgress() || q.isWaiting()) { hasActive = true; break; }
+        if (!hasActive) p.started_at = nowStr();
+
         queue_.push_back(p);
         save();
         return p;
@@ -122,19 +129,34 @@ public:
         save();
     }
 
-    // IN_PROGRESS 항목 순회 → 경과 시간 충족 시 자동 완료 처리
-    // WAITING 항목은 건너뜀 (Phase 4 processNext()가 started_at 기록 담당)
+    // IN_PROGRESS 항목 완료 처리 + 다음 WAITING 자동 시작 (FIFO)
     void checkAndComplete() {
         bool changed = false;
+
+        // ① 완료 처리
         for (auto& p : queue_) {
-            if (p.isDone() || !p.isTimeElapsed()) continue;  // 완료·WAITING 건너뜀
+            if (p.isDone() || !p.isTimeElapsed()) continue;
             p.completed = true;
-            if (auto* s = findSample(p.sample_id))
-                s->stock += p.actual_qty;
-            if (auto* o = findOrder(p.order_id))
-                o->status = OrderStatus::CONFIRMED;
+            if (auto* s = findSample(p.sample_id)) s->stock += p.actual_qty;
+            if (auto* o = findOrder(p.order_id))   o->status = OrderStatus::CONFIRMED;
             changed = true;
         }
+
+        // ② FIFO 자동 시작: IN_PROGRESS 없고 WAITING 존재하면 첫 번째 항목 시작
+        bool hasInProgress = false;
+        for (const auto& p : queue_)
+            if (p.isInProgress()) { hasInProgress = true; break; }
+
+        if (!hasInProgress) {
+            for (auto& p : queue_) {
+                if (p.isWaiting()) {
+                    p.started_at = nowStr();
+                    changed = true;
+                    break;  // FIFO: 첫 번째 WAITING만 시작
+                }
+            }
+        }
+
         if (changed) save();
     }
 

@@ -150,12 +150,14 @@
     <ClInclude Include="Service\SampleService.h" />
     <ClInclude Include="Service\OrderService.h" />
     <ClInclude Include="Service\MonitoringService.h" />
+    <ClInclude Include="Service\ProductionService.h" />
     <ClInclude Include="Service\DummyDataService.h" />
     <ClInclude Include="View\ConsoleUI.h" />
     <ClInclude Include="View\SampleView.h" />
     <ClInclude Include="View\OrderView.h" />
     <ClInclude Include="View\OrderManagerView.h" />
     <ClInclude Include="View\MonitoringView.h" />
+    <ClInclude Include="View\ProductionView.h" />
     <ClInclude Include="View\DummyDataView.h" />
     <ClInclude Include="View\MainView.h" />
   </ItemGroup>
